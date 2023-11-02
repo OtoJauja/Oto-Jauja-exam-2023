@@ -1,24 +1,45 @@
-import {createRouter, createWebHistory} from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
+import { useAuthStore } from '../stores/auth'
+
+import Login from '@/views/Login.vue'
+import Songs from '@/views/Songs.vue'
+import Albums from '@/views/Albums.vue'
+import About from '@/views/About.vue'
 
 const router = createRouter({
     history: createWebHistory(),
-    routes : [
-
+    routes: [
+        {
+            path: '/',
+            component: Songs,
+        },
+        {
+            path: '/albums',
+            component: Albums,
+        },
+        {
+            path: '/about',
+            component: About,
+        },
+        {
+            path: '/login',
+            component: Login,
+        }
     ]
 })
+router.beforeEach((to, from, next) => {
+    if (to.matched.length > 0) {
+      if (!useAuthStore.authenticated && to.path !== '/login') {
+        next('/login');
+      } else if (useAuthStore.authenticated && to.path === '/login') {
+        next(from ? from.path : '/');
+      } else {
+        next();
+      }
+    } else {
+      next('/');
+    }
+  })
 
-// LV
-// Tiek izveidots middleware / starpprogrammatūra kura katru reizi veiks pārbaudi pirms tiks nomainīta rūtera adrese
-// arguments to glabā adresi uz kurieni gribam iet
-// arguments from glabā adresi no kurienes mēs nākam
-
-// ENG
-// Middleware is a function that is executed before the route is changed
-// argument "to" stores the address where we want to navigate/go
-// argument "from" stores the address from where we're coming from
-
-router.beforeEach((to, from) => {
-
-})
 
 export default router
