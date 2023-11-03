@@ -9,7 +9,7 @@ export const useAuthStore = reactive({
     code: "IT1234",
     favorite_songs: localStorage.favorite_songs ? localStorage.favorite_songs.split(",") : []
   },
-  authenticated: localStorage.is_authenticated ?? false,
+  authenticated:  false,
   setUserData(name, surname, code) {
     this.user.name = name;
     this.user.surname = surname;
