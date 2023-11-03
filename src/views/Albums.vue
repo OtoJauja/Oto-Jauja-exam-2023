@@ -12,7 +12,8 @@
             </div>
         </div>
         <ul id="list-albums" :class="{ grid: isGrid }">
-            <li class="album" v-for="album in albums" @click="selectAlbum(album.id)">
+            <li class="album" v-for="album in albums" :key="album.id" @click="selectAlbum(album.id)"
+                :class="{ active: album.id === getAlbumId }">
                 <img id="img-album" :src="album.images[1].url" />
                 <div class="album-info">
                     <h4 id="txt-album-name">{{ album.name }}</h4>
@@ -40,7 +41,6 @@ export default {
     },
     data() {
         return {
-            player: usePlayerStore,
             isGrid: true,
             click: 0,
         }
@@ -86,6 +86,10 @@ export default {
                 accumulator[currentSong.album.id].tracks.push(currentSong);
                 return accumulator;
             }, Object.create(null));
+        },
+        getAlbumId() {
+            const album = usePlayerStore();
+            return album.getNowPlayingAlbumID;
         }
     }
 }

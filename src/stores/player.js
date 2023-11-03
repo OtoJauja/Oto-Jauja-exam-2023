@@ -1,11 +1,9 @@
 import { defineStore } from 'pinia'
-//import { reactive } from "vue"
 
 export const usePlayerStore = defineStore('player', {
     state: () => ({
         playlist: [],
         now_playing: {},
-        player: usePlayerStore(), // SONG OBJECT
     }),
     getters: {
         getNextSong() {

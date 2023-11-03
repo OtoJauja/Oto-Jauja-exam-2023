@@ -3,25 +3,25 @@
         <div class="wrapper-header">
             <h1>ABOUT ME</h1>
             <div class="settings">
-                <button id="btn-edit" :class="{ active: edit_form }" @click="edit_form = !edit_form">{{ edit_form ? "Cancel" : "Edit Form"
+                <button id="btn-edit" :class="{ active: editForm }" @click="editForm = !editForm">{{ editForm ? "Cancel" : "Edit Form"
                 }}</button>
-                <button id="btn-save" v-if="edit_form" class="submit" @click="saveForm()">Save Form</button>
+                <button id="btn-save" v-if="editForm" class="submit" @click="saveForm()">Save Form</button>
             </div>
         </div>
         <form>
             <div class="wrapper-input">
                 <label>NAME</label>
-                <input id="input-name" v-if="edit_form" v-model="user_form.name" />
+                <input id="input-name" v-if="editForm" v-model="userForm.name" />
                 <p id="txt-name" v-else>{{ useAuthStore.user.name }}</p>
             </div>
             <div class="wrapper-input">
                 <label>SURNAME</label>
-                <input id="input-surname" v-if="edit_form" v-model="user_form.surname" />
+                <input id="input-surname" v-if="editForm" v-model="userForm.surname" />
                 <p id="txt-surname" v-else>{{ useAuthStore.user.surname }}</p>
             </div>
             <div class="wrapper-input">
                 <label>STUDENT CODE</label>
-                <input id="input-code" v-if="edit_form" v-model="user_form.code" />
+                <input id="input-code" v-if="editForm" v-model="userForm.code" />
                 <p id="txt-code" v-else>{{ useAuthStore.user.code }}</p>
             </div>
             <div class="wrapper-songs">
@@ -44,17 +44,13 @@
 <script>
 import { useAuthStore } from '@/stores/auth'
 import songsAPI from '../data/songs'
-import IconEdit from '../components/icons/IconEdit.vue'
 
 export default {
-    components: { 
-        IconEdit 
-    },
     data() {
         return {
             useAuthStore,
-            edit_form: false,
-            user_form: {
+            editForm: false,
+            userForm: {
                 name: useAuthStore.user.name,
                 surname: useAuthStore.user.surname,
                 code: useAuthStore.user.code
@@ -66,8 +62,8 @@ export default {
             return artists.map(artist => artist.name).join(", ");
         },
         saveForm() {
-            useAuthStore.setUserData(this.user_form.name, this.user_form.surname, this.user_form.code);
-            this.edit_form = false;
+            useAuthStore.setUserData(this.userForm.name, this.userForm.surname, this.userForm.code);
+            this.editForm = false;
         }
     },
     computed: {

@@ -15,22 +15,22 @@
             <table cellspacing="0" cellpadding="0">
                 <tr ref="header">
                     <th id="th-id">#</th>
-                    <th id="th-title" @click="sortBy('title')" :class="{ active: sort.by === 'title'}">
+                    <th id="th-title" @click="sortBy('title')" :class="{ active: sort.by === 'title' }">
                         Title
-                        <IconCaretUp v-if="sort.by === 'title'" :class="{ 'flip-vertical': sort.order === 'desc'}" />
+                        <IconCaretUp v-if="sort.by === 'title'" :class="{ 'flip-vertical': sort.order === 'desc' }" />
                     </th>
                     <th id="th-artist">Artist</th>
                     <th id="th-album">Album</th>
-                    <th id="th-duration" @click="sortBy('duration')" :class="{active: sort.by === 'duration' }">
+                    <th id="th-duration" @click="sortBy('duration')" :class="{ active: sort.by === 'duration' }">
                         Duration
-                        <IconCaretUp v-if="sort.by === 'duration'" :class="{'flip-vertical': sort.order === 'desc'}" />
+                        <IconCaretUp v-if="sort.by === 'duration'" :class="{ 'flip-vertical': sort.order === 'desc' }" />
                     </th>
                 </tr>
                 <!-- Loop goes on this <tr> element -->
-                <tr class="song" v-for="(song, index) in filtered_songs" :key="song.id" @click="selectSong(song)" 
-                :class="{ active: player.now_playing_song_id === song.id }">
+                <tr class="song" v-for="(song, index) in filtered_songs" :key="song.id" @click="selectSong(song)"
+                    :class="{ active: isNowPlaying(song) }">
                     <td id="td-index">
-                        <IconPlay v-if="player.now_playing_song_id === song.id"/>
+                        <IconPlay v-if="isNowPlaying(song)" color="var(--c-accent)" />
                         <span v-else id="txt-index">{{ index + 1 }}</span>
                     </td>
                     <td id="td-title">
@@ -41,7 +41,8 @@
                     <td id="td-album">{{ song.album.name }}</td>
                     <td id="td-duration">
                         {{ getTime(song.duration_ms) }}
-                        <IconHeart :class="{ active: useAuthStore.getFavoriteSongs().includes(song.id) }" @click="useAuthStore.toggleFavorite(song.id)"/>
+                        <IconHeart :class="{ active: useAuthStore.getFavoriteSongs().includes(song.id) }"
+                            @click="useAuthStore.toggleFavorite(song.id)" />
                     </td>
                 </tr>
             </table>
@@ -50,7 +51,6 @@
 </template>
 
 <script>
-import { mapState } from 'pinia';
 import { useAuthStore } from '@/stores/auth';
 import { usePlayerStore } from '@/stores/player';
 import songsAPI from '../data/songs';
@@ -59,10 +59,10 @@ import IconCaretUp from '../components/icons/IconCaretUp.vue';
 import IconHeart from '../components/icons/IconHeart.vue';
 
 export default {
-    components: { 
-        IconPlay, 
-        IconCaretUp, 
-        IconHeart 
+    components: {
+        IconPlay,
+        IconCaretUp,
+        IconHeart
     },
     data() {
         return {
@@ -85,39 +85,27 @@ export default {
         sortBy(by) {
             if (by === this.sort.by) {
                 this.sort.order = this.sort.order === 'asc' ? 'desc' : 'asc';
-                this.sort.by = this.sort.order === 'asc' ? null : this.sort.by;
             } else {
                 this.sort.by = by;
             }
-            switch (this.sort.by) {
-                case 'title':
-                    this.songs.sort((a, b) => {
+            this.songs.sort((a, b) => {
+                switch (this.sort.by) {
+                    case 'title':
                         if (this.sort.order === 'asc') {
-                            if (a.name.toLowerCase() < b.name.toLowerCase()) { return -1; }
-                            if (a.name.toLowerCase() > b.name.toLowerCase()) { return 1; }
+                            return a.name.localeCompare(b.name);
                         } else {
-                            if (b.name.toLowerCase() < a.name.toLowerCase()) { return -1; }
-                            if (b.name.toLowerCase() > a.name.toLowerCase()) { return 1; }
+                            return b.name.localeCompare(a.name);
                         }
-                        return 0;
-                    });
-                    break;
-                case 'duration':
-                    this.songs.sort((a, b) => {
+                    case 'duration':
                         if (this.sort.order === 'asc') {
-                            if (a.duration_ms < b.duration_ms) { return -1; }
-                            if (a.duration_ms > b.duration_ms) { return 1; }
+                            return a.duration_ms - b.duration_ms;
                         } else {
-                            if (b.duration_ms < a.duration_ms) { return -1; }
-                            if (b.duration_ms > a.duration_ms) { return 1; }
+                            return b.duration_ms - a.duration_ms;
                         }
+                    default:
                         return 0;
-                    });
-                    break;
-                default:
-                    this.songs = [...songsAPI];
-                    break;
-            }
+                }
+            });
         },
         selectSong(song) {
             const player = usePlayerStore();
@@ -143,16 +131,6 @@ export default {
         },
     },
     computed: {
-        ...mapState(usePlayerStore, {
-            now_playing           : "getNowPlaying",
-            now_playing_song_id   : "getNowPlayingSongId",
-            song_preview          : "getNowPlayingSongPreview",
-            now_playing_song_image: "getNowPlayingSongImage",
-            now_playing_song_name : "getNowPlayingSongName",
-            now_playing_artists   : "getNowPlayingArtists",
-            next_song             : "getNextSong",
-            previous_song         : "getPreviousSong",
-        }),
         filtered_songs() {
             return this.songs.filter(song => {
                 let valid = song.name.toLowerCase().indexOf(this.search.toLowerCase()) > -1;
@@ -161,6 +139,10 @@ export default {
                 }
                 return valid;
             });
+        },
+        isNowPlaying() {
+            const player = usePlayerStore();
+            return (song) => song.id === player.getNowPlayingSongId;
         }
     },
 }

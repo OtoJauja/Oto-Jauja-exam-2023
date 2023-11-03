@@ -1,5 +1,5 @@
 import { reactive } from "vue"
-import { defineStore } from 'pinia'
+//import { defineStore } from 'pinia' - nesanāca ar pinia izveidot funkcionalitāti auth :/, bet sanāca ar reactive
 import router from "../router"
 
 export const useAuthStore = reactive({
@@ -40,5 +40,8 @@ export const useAuthStore = reactive({
   },
   getFavoriteSongs() {
     return this.user.favorite_songs;
-  }
+  },
+  is_authenticated() {
+    return localStorage.is_authenticated ?? false;
+  },
 })
