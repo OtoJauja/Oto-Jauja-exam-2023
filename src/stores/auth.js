@@ -1,5 +1,5 @@
 import { reactive } from "vue"
-//import { defineStore } from 'pinia' - nesanāca ar pinia izveidot funkcionalitāti auth :/, bet sanāca ar reactive
+//import { defineStore } from 'pinia' - nesanāca ar pinia izveidot funkcionalitāti auth :/ bet sanāca ar reactive
 import router from "../router"
 
 export const useAuthStore = reactive({
